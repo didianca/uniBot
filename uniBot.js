@@ -8,7 +8,7 @@ module.exports.Uni = (message) => {
             const responseIndex = Math.floor((Math.random() * 10) + 1) % totalResponses;
             const finalResponse = response.data[responseIndex];
             //getting one quote
-            let totalQuotes = quotes.length;
+            const totalQuotes = quotes.length;
             let quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
             let quote = quotes[quotesIndex];
 
