@@ -41,7 +41,7 @@ client.on('message', msg => {
 //coin flip
 client.on('message', msg => {
     if (msg.content.includes('!flip')){
-        const coinSide = Math.round(Math.random()) === 1 ? 'Heads!' : 'Tails!';
+        const coinSide = Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!';
         msg.reply(coinSide);
     }
 });
