@@ -6,7 +6,7 @@ module.exports.Uni = (message) => {
             //getting one gif
             let totalResponses = response.data.length;
             const responseIndex = Math.floor((Math.random() * 10) + 1) % totalResponses;
-            let finalResponse = response.data[responseIndex];
+            const finalResponse = response.data[responseIndex];
             //getting one quote
             let totalQuotes = quotes.length;
             let quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
