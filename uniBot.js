@@ -10,7 +10,7 @@ module.exports.Uni = (message) => {
             //getting one quote
             const totalQuotes = quotes.length;
             const quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
-            let quote = quotes[quotesIndex];
+            const quote = quotes[quotesIndex];
 
             message.channel.send(`${quote} ${member} :unicorn:`, {
                 files: [finalResponse.images.fixed_height.url]
