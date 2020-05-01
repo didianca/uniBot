@@ -38,7 +38,6 @@ const scrim = async (message) => {
 
     let teamMessage = `> Team ${allUsers[0]}:\n`;
     const half = allUsers.length / 2;
-    console.log(allUsers);
     for (let i = 0; i < allUsers.length; i++) {
         if (i === half) teamMessage += `\n> Team ${allUsers[i]}:\n`;
         teamMessage += `${allUsers[i]}\n`;
@@ -95,5 +94,4 @@ const request = async (verb, params) => {
 };
 
 client.login(token);
-
 
