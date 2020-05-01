@@ -9,7 +9,7 @@ module.exports.Uni = (message) => {
             const finalResponse = response.data[responseIndex];
             //getting one quote
             const totalQuotes = quotes.length;
-            let quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
+            const quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
             let quote = quotes[quotesIndex];
 
             message.channel.send(`${quote} ${member} :unicorn:`, {
