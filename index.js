@@ -38,6 +38,14 @@ client.on('message', msg => {
     if (msg.content === 'ping') msg.reply('pong');
 });
 
+//coin flip
+client.on('message', msg => {
+    if (msg.content.includes('!flip')){
+        const coinSide = Math.round(Math.random()) === 1 ? 'Heads!' : 'Tails!';
+        msg.reply(coinSide);
+    }
+});
+
 //send youtube videos
 client.on('message', async msg => {
     if (msg.content.startsWith(`${prefix}yt`)) {
