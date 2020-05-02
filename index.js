@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const {Uni} = require('./uniBot');
+const db = require('./db.js');
 const {prefix, token, giphyToken, ytToken} = require('./config');
 const client = new Discord.Client();
 
@@ -9,6 +10,7 @@ const fetch = require('node-fetch');
 
 
 client.once('ready', () => {
+    db.init();
     console.log("Unicorn trotting!")
 });
 
@@ -24,26 +26,31 @@ client.on('message', message => {
     }
 });
 
+
+
 const scrim = async (message) => {
     const CHANNEL_CHEESE_CAKE = '310195830290382848';
     const channel = await client.channels.fetch(CHANNEL_CHEESE_CAKE);
     const usersInChannel = [];
     //console.log(channel.members);
     for (let [sf, member] of channel.members) {
-        console.log(member);
+       // console.log(member);
+        console.log(member.id);
         const name = member.nickname ? member.nickname : member.user.username;
         usersInChannel.push(name);
     }
     const allUsers = shuffle(usersInChannel);
-
+    if (allUsers.length < 2) {
+        message.channel.send('Players must be in Cheese Cake Channel');
+        return;
+    }
     let teamMessage = `> Team ${allUsers[0]}:\n`;
-    const half = allUsers.length / 2;
     console.log(allUsers);
     for (let i = 0; i < allUsers.length; i++) {
-        if (i === half) teamMessage += `\n> Team ${allUsers[i]}:\n`;
+        if (i === Math.floor(allUsers.length / 2)) teamMessage += `\n> Team ${allUsers[i]}:\n`;
         teamMessage += `${allUsers[i]}\n`;
     }
-    message.channel.send(teamMessage)
+    message.channel.send(teamMessage);
 };
 
 const shuffle = (array) => {
