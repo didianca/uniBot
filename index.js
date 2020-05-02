@@ -33,13 +33,14 @@ const scrim = async (message) => {
     const memberIds = [];
     //console.log(channel.members);
     for (let [sf, member] of channel.members) {
-        // console.log(member);
         console.log(member.id);
         const name = member.nickname ? member.nickname : member.user.username;
         usersInChannel.push(name);
         memberIds.push(member.id);
         db.insertPlayerIfNotExists(member.id, name);
     }
+    const playersData = db.getPlayers(memberIds);
+    console.log(playersData);
     const allUsers = shuffle(usersInChannel);
     if (allUsers.length < 2) {
         message.channel.send('Players must be in Cheese Cake Channel');

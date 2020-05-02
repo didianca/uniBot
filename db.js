@@ -1,36 +1,36 @@
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./data/db.db');
-
-const init = () => {
-        db.serialize(() => {
-            db.run(`CREATE TABLE IF NOT EXISTS players (
+const sqlite = require('sqlite-async');
+let db;
+const init = async () => {
+    try {
+        db = await sqlite.open('./data/db.db');
+        await db.run(`CREATE TABLE IF NOT EXISTS players (
             id INT,
             name STRING,
             hand_elo
             )`);
-            const stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-            //     stmt.run("Ipsum " + i);
-            stmt.finalize();
-            db.each("SELECT rowid AS id, info FROM lorem", function (err, row) {
-                console.log(row.id + ": " + row.info);
-            });
-        });
+        const stmt = await db.prepare("INSERT INTO lorem VALUES (?)");
+        //     stmt.run("Ipsum " + i);
+        await stmt.finalize();
+        console.log('DB started');
+    } catch (error) {
+        throw Error('can not access sqlite database');
+    }
 };
 
-const insertPlayerIfNotExists = (memberId, name, hand_elo = 5) => {
-    const stmt = db.prepare(`INSERT OR IGNORE INTO players(id, name, hand_elo)
+const insertPlayerIfNotExists = async (memberId, name, hand_elo = 5) => {
+    const stmt = await db.prepare(`INSERT OR IGNORE INTO players(id, name, hand_elo)
      VALUES (?, ? , ?)`);
     stmt.run(memberId, name, hand_elo);
     stmt.finalize();
 };
 
-const getPlayers = (memberIds) => {
-    const stmt = db.prepare(`INSERT OR IGNORE INTO players(id, name, hand_elo)
-     VALUES (?, ? , ?)`);
-    stmt.run(memberId, name, hand_elo);
-    stmt.finalize();
+const getPlayers = async memberIds => {
+    const users = [];
+    await Promise.all(memberIds.map(async id => {
+        users.push(await db.get(`SELECT * FROM players WHERE id = ?`, id));
+    }));
+    console.log('users', users)
 };
-
 
 module.exports = {
     init,
