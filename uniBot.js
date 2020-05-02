@@ -5,12 +5,12 @@ module.exports.Uni = (message) => {
         .then((response) => {
             //getting one gif
             let totalResponses = response.data.length;
-            let responseIndex = Math.floor((Math.random() * 10) + 1) % totalResponses;
-            let finalResponse = response.data[responseIndex];
+            const responseIndex = Math.floor((Math.random() * 10) + 1) % totalResponses;
+            const finalResponse = response.data[responseIndex];
             //getting one quote
-            let totalQuotes = quotes.length;
-            let quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
-            let quote = quotes[quotesIndex];
+            const totalQuotes = quotes.length;
+            const quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
+            const quote = quotes[quotesIndex];
 
             message.channel.send(`${quote} ${member} :unicorn:`, {
                 files: [finalResponse.images.fixed_height.url]
