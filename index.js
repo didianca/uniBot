@@ -37,7 +37,7 @@ const scrim = async (message) => {
         const name = member.nickname ? member.nickname : member.user.username;
         usersInChannel.push(name);
         memberIds.push(member.id);
-        db.insertPlayerIfNotExists(member.id, name);
+        await db.insertPlayerIfNotExists(member.id, name);
     }
     const playersData = db.getPlayers(memberIds);
     console.log(playersData);

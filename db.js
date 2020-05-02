@@ -6,11 +6,9 @@ const init = async () => {
         await db.run(`CREATE TABLE IF NOT EXISTS players (
             id INT,
             name STRING,
-            hand_elo
+            hand_elo INT,
+            UNIQUE(id)
             )`);
-        const stmt = await db.prepare("INSERT INTO lorem VALUES (?)");
-        //     stmt.run("Ipsum " + i);
-        await stmt.finalize();
         console.log('DB started');
     } catch (error) {
         throw Error('can not access sqlite database');
@@ -20,8 +18,8 @@ const init = async () => {
 const insertPlayerIfNotExists = async (memberId, name, hand_elo = 5) => {
     const stmt = await db.prepare(`INSERT OR IGNORE INTO players(id, name, hand_elo)
      VALUES (?, ? , ?)`);
-    stmt.run(memberId, name, hand_elo);
-    stmt.finalize();
+    await stmt.run(memberId, name, hand_elo);
+    await stmt.finalize();
 };
 
 const getPlayers = async memberIds => {
@@ -29,7 +27,7 @@ const getPlayers = async memberIds => {
     await Promise.all(memberIds.map(async id => {
         users.push(await db.get(`SELECT * FROM players WHERE id = ?`, id));
     }));
-    console.log('users', users)
+    console.log('users', users);
 };
 
 module.exports = {
