@@ -4,7 +4,7 @@ module.exports.Uni = (message) => {
     giphy.search('gifs', {"q": ["magical", "unicorn", "animated candies", "fairyland"]})
         .then((response) => {
             //getting one gif
-            let totalResponses = response.data.length;
+            const totalResponses = response.data.length;
             const responseIndex = Math.floor((Math.random() * 10) + 1) % totalResponses;
             const finalResponse = response.data[responseIndex];
             //getting one quote
