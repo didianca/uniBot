@@ -22,22 +22,23 @@ client.on('message', message => {
         else if (message.content === '!flip' || message.content === '!f') message.reply(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
         else if (message.content.startsWith('!scrim')) scrim(message)
     } catch {
-        //message.reply('Something broke, should have written tests.');
+        message.reply('Hiccup...');
     }
 });
-
-
 
 const scrim = async (message) => {
     const CHANNEL_CHEESE_CAKE = '310195830290382848';
     const channel = await client.channels.fetch(CHANNEL_CHEESE_CAKE);
     const usersInChannel = [];
+    const memberIds = [];
     //console.log(channel.members);
     for (let [sf, member] of channel.members) {
-       // console.log(member);
+        // console.log(member);
         console.log(member.id);
         const name = member.nickname ? member.nickname : member.user.username;
         usersInChannel.push(name);
+        memberIds.push(member.id);
+        db.insertPlayerIfNotExists(member.id, name);
     }
     const allUsers = shuffle(usersInChannel);
     if (allUsers.length < 2) {
