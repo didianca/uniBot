@@ -1,42 +1,66 @@
 const Discord = require('discord.js');
+const {Uni} = require('./uniBot');
+const db = require('./db.js');
 const {prefix, token, giphyToken, ytToken} = require('./config');
 const client = new Discord.Client();
-const quotes = require('./quotes');
+
 const GphApiClient = require('giphy-js-sdk-core');
 giphy = GphApiClient(giphyToken);
 const fetch = require('node-fetch');
 
-client.once('ready', () => {console.log("Unicorn trotting!")});
+
+client.once('ready', () => {
+    db.init();
+    console.log("Unicorn trotting!")
+});
 
 //!uni
 client.on('message', message => {
-    if (message.content.startsWith(`${prefix}uni`)) {
-        let member = message.mentions.members.first() || "";
-        giphy.search('gifs', {"q": ["magical", "unicorn", "animated candies", "fairyland"]})
-            .then((response) => {
-                //getting one gif
-                let totalResponses = response.data.length;
-                let responseIndex = Math.floor((Math.random() * 10) + 1) % totalResponses;
-                let finalResponse = response.data[responseIndex];
-                //getting one quote
-                let totalQuotes = quotes.length;
-                let quotesIndex = Math.floor((Math.random() * 10) + 1) % totalQuotes;
-                let quote = quotes[quotesIndex];
-
-                message.channel.send(`${quote} ${member} :unicorn:`, {
-                    files: [finalResponse.images.fixed_height.url]
-                });
-            })
-            .catch(() => {
-                message.channel.send('Hiccup...')
-            });
+    try {
+        if (message.content.startsWith(`${prefix}uni`)) Uni(message);
+        else if (message.content === 'ping') message.reply('pong');
+        else if (message.content === '!flip' || message.content === '!f') message.reply(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
+        else if (message.content.startsWith('!scrim')) scrim(message)
+    } catch {
+        message.reply('Hiccup...');
     }
 });
 
-//ping-pong
-client.on('message', msg => {
-    if (msg.content === 'ping') msg.reply('pong');
-});
+const scrim = async (message) => {
+    const CHANNEL_CHEESE_CAKE = '310195830290382848';
+    const channel = await client.channels.fetch(CHANNEL_CHEESE_CAKE);
+    const usersInChannel = [];
+    const memberIds = [];
+    //console.log(channel.members);
+    for (let [sf, member] of channel.members) {
+        // console.log(member);
+        console.log(member.id);
+        const name = member.nickname ? member.nickname : member.user.username;
+        usersInChannel.push(name);
+        memberIds.push(member.id);
+        db.insertPlayerIfNotExists(member.id, name);
+    }
+    const allUsers = shuffle(usersInChannel);
+    if (allUsers.length < 2) {
+        message.channel.send('Players must be in Cheese Cake Channel');
+        return;
+    }
+    let teamMessage = `> Team ${allUsers[0]}:\n`;
+    console.log(allUsers);
+    for (let i = 0; i < allUsers.length; i++) {
+        if (i === Math.floor(allUsers.length / 2)) teamMessage += `\n> Team ${allUsers[i]}:\n`;
+        teamMessage += `${allUsers[i]}\n`;
+    }
+    message.channel.send(teamMessage);
+};
+
+const shuffle = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
 
 //send youtube videos
 client.on('message', async msg => {
@@ -79,5 +103,4 @@ const request = async (verb, params) => {
 };
 
 client.login(token);
-
 

@@ -11,7 +11,8 @@ module.exports = quotes = [
     "I want to be a savant butterfly ",
     "What is that in the horizon? Can it be a cotton-candy castle...?",
     "Today I woke up smelling like violet french fries",
-    "When I grow up I want to be The Pegasus!",
-    "One day I saw my cousin on the emblem of a car...sorcery",
-    "I have a multicolored horned, wanna touch it?"
+    "When I grow up I want to be Pegasus!",
+    "One day I saw my cousin on the emblem of a car... sorcery",
+    "I have a multicolored horned, wanna touch it?",
+    "Fly you fools!"
 ];
