@@ -49,7 +49,7 @@ const recordCombatScores = async (IGNs) => {
     const newAverages = {};
     await Promise.all(Object.keys(IGNs).map(async key => {
         const player = await db.get(`SELECT id FROM players WHERE ign = ?`, key.toString());
-         console.log('Selected', key, player);
+        console.log('Selected', key, player);
         if (!player) {
             console.log(key, 'players IGN missing');
         } else {
@@ -94,6 +94,11 @@ const getPlayers = async memberIds => {
     return users;
 };
 
+const setIgn = async (playerId, ign) => {
+    const stmt = await db.prepare(`UPDATE players SET ign = ? WHERE id = ?`);
+    return stmt.run(ign, playerId);
+};
+
 const addInProgressMatch = async (teams) => {
     //console.log('im here im here', teams);
     const matchId = uuid.v4();
@@ -134,6 +139,7 @@ module.exports = {
     getAverageScore,
     getEveryonesAverageScore,
     getLeaderboard,
+    setIgn,
 };
 
 

@@ -22,6 +22,14 @@ client.on('message', async message => {
         if (content.startsWith(`${prefix}uni`)) Uni(message);
         else if (content === 'ping') message.reply('pong');
         else if (content === '!flip' || content === '!f') message.reply(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
+        else if (content.startsWith('!setign')) try {
+            const playerId = message.author.id;
+            const ign = message.content.split('!setign ').join('');
+            await db.setIgn(playerId, ign);
+            message.reply('set!');
+        } catch (e) {
+            console.log(e)
+        }
         else if (content.startsWith('!scrim') || content.startsWith('!s')) try {
             await scrim(message);
         } catch (e) {
@@ -147,7 +155,7 @@ const splitTeams = (aggregateUsers) => {
     return [team0, team1];
 };
 
-const determineDisparity = async (teamsArr) => {
+const  determineDisparity = async (teamsArr) => {
     // console.log('TEAM 0', teamsArr[0]);
     // console.log('TEAM 1', teamsArr[1]);
     const team0Elo = await totalTeamElo(teamsArr[0]);
@@ -160,7 +168,10 @@ const determineDisparity = async (teamsArr) => {
 
 const totalTeamElo = async (teamArr) => {
     let totalElo = 0;
-    const averages = await Promise.all(teamArr.map(player => db.getAverageScore(player.id)));
+    const averages = await Promise.all(teamArr.map(player => {
+        const average = db.getAverageScore(player.id);
+        return average ? average : 125; //if the player is new give them a 125 cmbt score
+    }));
     averages.forEach(player => totalElo += player.averageScore);
     return totalElo;
 };
