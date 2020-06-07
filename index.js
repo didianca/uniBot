@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const {Uni} = require('./uniBot');
-const db = require('./db.js');
+const sqllite = require('./sqllite.js');
 const {prefix, token, giphyToken, ytToken} = require('./config');
 const client = new Discord.Client();
 
@@ -10,7 +10,7 @@ const fetch = require('node-fetch');
 
 
 client.once('ready', () => {
-    db.init();
+    sqllite.init();
     console.log("Unicorn trotting!")
 });
 
@@ -38,7 +38,7 @@ const scrim = async (message) => {
         const name = member.nickname ? member.nickname : member.user.username;
         usersInChannel.push(name);
         memberIds.push(member.id);
-        db.insertPlayerIfNotExists(member.id, name);
+        sqllite.insertPlayerIfNotExists(member.id, name);
     }
     const allUsers = shuffle(usersInChannel);
     if (allUsers.length < 2) {
