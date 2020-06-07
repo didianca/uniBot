@@ -1,5 +1,10 @@
-const quotes = require('./quotes');
-module.exports.Uni = (message) => {
+const quotes = require('../resources/quotes');
+const { GIPHY_TOKEN } = require('../config');
+const GiphyApiClient = require('giphy-js-sdk-core');
+
+giphy = GiphyApiClient(GIPHY_TOKEN);
+
+module.exports.unicorn = (message) => {
     let member = message.mentions.members.first() || "";
     giphy.search('gifs', {"q": ["magical", "unicorn", "animated candies", "fairyland"]})
         .then((response) => {

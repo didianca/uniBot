@@ -1,28 +1,43 @@
 const Discord = require('discord.js');
-const {Uni} = require('./uniBot');
+const fetch = require('node-fetch');
+const { unicorn } = require('./services/unicorn');
+const { youTube } = require('./services/youtube');
+const { Valorant } = require('./services/valorant');
 const sqllite = require('./sqllite.js');
-const {prefix, token, giphyToken, ytToken} = require('./config');
+const {
+    PREFIX,
+    DISCORD_TOKEN,
+} = require('./config');
+
 const client = new Discord.Client();
 
-const GphApiClient = require('giphy-js-sdk-core');
-giphy = GphApiClient(giphyToken);
-const fetch = require('node-fetch');
-
+client.login(DISCORD_TOKEN);
 
 client.once('ready', () => {
     sqllite.init();
     console.log("Unicorn trotting!")
 });
 
-//!uni
+// UNICORN - !uni
 client.on('message', message => {
     try {
-        if (message.content.startsWith(`${prefix}uni`)) Uni(message);
+        if (message.content.startsWith(`${PREFIX}uni`)) unicorn(message);
         else if (message.content === 'ping') message.reply('pong');
         else if (message.content === '!flip' || message.content === '!f') message.reply(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
         else if (message.content.startsWith('!scrim')) scrim(message)
-    } catch {
+    } catch (err) {
+        console.log(err.stack)
         message.reply('Hiccup...');
+    }
+});
+
+// YOUTUBE - !yt
+client.on('message', async msg => {
+    if (msg.content.startsWith(`${PREFIX}yt`)) {
+        const content = msg.content;
+        const vidName = content.indexOf('!yt') + 1;
+        const result = content.substring(vidName + 1);
+        msg.channel.send(await youTube(result));
     }
 });
 
@@ -61,46 +76,4 @@ const shuffle = (array) => {
     }
     return array;
 };
-
-//send youtube videos
-client.on('message', async msg => {
-    if (msg.content.startsWith(`${prefix}yt`)) {
-        const content = msg.content;
-        const vidName = content.indexOf('!yt') + 1;
-        const result = content.substring(vidName + 1);
-        msg.channel.send(await getVidLink(result));
-    }
-});
-
-const getVidLink = async (vidName) => {
-    try {
-        const encodedVidName = encodeURI(vidName);
-        console.log(encodedVidName);
-        const params = {url: `https://www.googleapis.com/youtube/v3/search?part=id&maxResults=2&order=viewCount&type=video&key=${ytToken}&q=${encodedVidName}`};
-        const response = await request('GET', params);
-        const videoId = response.items[0].id.videoId;
-        return `https://www.youtube.com/watch?v=${videoId}`;
-    } catch (e) {
-        return "This video doesn't exist..."
-    }
-};
-
-const request = async (verb, params) => {
-    let res;
-    res = verb.toUpperCase() === 'GET' ?
-        await fetch(
-            params.url, {
-                method: verb,
-                headers: params.headers
-            }) :
-        await fetch(
-            params.url, {
-                method: verb,
-                body: params.body,
-                headers: params.headers
-            });
-    return await res.json();
-};
-
-client.login(token);
 

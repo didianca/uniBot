@@ -1,26 +1,17 @@
 const mysql = require('mysql')
 const {
-    HOST,
-    USER,
-    PASSWORD,
-    PORT
+    DB_HOST,
+    DB_USER,
+    DB_PASSWORD,
+    DB_PORT
 } = require('./config');
 
-const connection = mysql.createConnection({
-    host: HOST,
-    user: USER,
-    password: PASSWORD,
-    port: PORT,
+module.exports.connection = mysql.createConnection({
+    host: DB_HOST,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    port: DB_PORT,
 });
-
-connection.connect(err => {
-    if (err) {
-        console.log(`Database connection failed: ${err.stack}`)
-        return;
-    }
-    console.log('Successfully connected to the DB.')
-
-})
 
 // connection.end(err => {
 //     if(err){
