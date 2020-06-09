@@ -12,6 +12,7 @@ const {
 const client = new Discord.Client();
 
 client.login(DISCORD_TOKEN);
+client.login(DISCORD_TOKEN);
 
 client.once('ready', () => {
     sqllite.init();

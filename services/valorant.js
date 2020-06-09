@@ -1,4 +1,4 @@
-const knex = require('../knex/knex.js');
+const { db } = require('../db');
 
 const scrim = async (message) => {
     const CHANNEL_CHEESE_CAKE = '310195830290382848';
@@ -35,3 +35,6 @@ const shuffle = (array) => {
     }
     return array;
 };
+
+
+        // todo: average the elo of all the players connected to the channel at the moment of scrimming and chose the average as a value for any new player with null 'players.last_elo' value
