@@ -1,18 +1,18 @@
+const Discord = require('discord.js');
+const fetch = require('node-fetch');
 const { db } = require('../db');
 
 const scrim = async (message) => {
-    const CHANNEL_CHEESE_CAKE = '310195830290382848';
-    const channel = await client.channels.fetch(CHANNEL_CHEESE_CAKE);
+    if(!message.member.voice.channel.id) return;
+    const voiceChannelId = message.member.voice.channel.id;
+    const channel = await client.channels.fetch(voiceChannelId);
     const usersInChannel = [];
     const memberIds = [];
-    //console.log(channel.members);
-    for (let [sf, member] of channel.members) {
-        // console.log(member);
-        console.log(member.id);
+    for (let [discordUserId, member] of channel.members) {
         const name = member.nickname ? member.nickname : member.user.username;
         usersInChannel.push(name);
         memberIds.push(member.id);
-        sqllite.insertPlayerIfNotExists(member.id, name);
+        db.insertPlayerIfNotExists(member.id, name); // todo: wip
     }
     const allUsers = shuffle(usersInChannel);
     if (allUsers.length < 2) {
@@ -20,7 +20,6 @@ const scrim = async (message) => {
         return;
     }
     let teamMessage = `> Team ${allUsers[0]}:\n`;
-    console.log(allUsers);
     for (let i = 0; i < allUsers.length; i++) {
         if (i === Math.floor(allUsers.length / 2)) teamMessage += `\n> Team ${allUsers[i]}:\n`;
         teamMessage += `${allUsers[i]}\n`;

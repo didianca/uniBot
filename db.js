@@ -13,11 +13,15 @@ module.exports.db = mysql.createConnection({
     port: DB_PORT,
 });
 
-
-// connection.end(err => {
-//     if(err){
-//         console.log(`Encountered error while ending connection: ${err.stack}`)
-//         return;
-//     }
-//     console.log('Successfully terminated connection.')
-// });
+module.exports.insertPlayerIfNotExists = (discordUserId, playerName) => {
+    db.query(
+        `INSERT INTO (id, name) VALUES (${discordUserId}, ${playerName})`, (err) => {
+            let outcome = `${playerName}, you are now part of the squad!`;
+            if(err) {
+                console.log(err);
+                outcome = 'Something went wrong';
+            }
+            return outcome;
+        }
+    )
+}
