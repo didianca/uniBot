@@ -1,6 +1,6 @@
 const sqlite = require('sqlite-async');
 const uuid = require('uuid');
-let db;
+const db;
 const init = async () => {
     try {
         db = await sqlite.open('./data/db.db');
