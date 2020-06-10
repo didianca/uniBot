@@ -2,11 +2,13 @@ const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const { unicorn } = require('./services/unicorn');
 const { youTube } = require('./services/youtube');
-const { Valorant } = require('./services/valorant');
+const { valorant } = require('./services/valorant');
 const sqllite = require('./sqllite.js');
+const util = require('./util');
 const {
     PREFIX,
     DISCORD_TOKEN,
+    YOU_TUBE_TOKEN
 } = require('./config');
 const helpMsg = `Welcome to Unibot:\n
 !flip or !f - random coin flip.\n
@@ -15,7 +17,9 @@ const helpMsg = `Welcome to Unibot:\n
 !elo - reply with players average elo.\n`;
 
 const client = new Discord.Client();
-client.login(DISCORD_TOKEN);
+client.login(DISCORD_TOKEN)
+    .then(() => console.log('Connected to discord'))
+    .catch(err => console.log(err));
 
 client.once('ready', () => {
     sqllite.init();
@@ -24,19 +28,19 @@ client.once('ready', () => {
 
 // UNICORN - !uni
 client.on('message', async message => {
-    const {content} = message;
+    const {content, author, reply } = message;
     try {
-        if (content.startsWith(`${prefix}uni`)) Uni(message);
-        else if (content === 'ping') message.reply('pong');
-        else if (content === '!flip' || content === '!f') message.reply(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
+        if (content.startsWith(`${PREFIX}uni`)) unicorn(message);
+        else if (content === 'ping') reply('pong');
+        else if (content === '!flip' || content === '!f') reply(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
         else if (content.startsWith('!setign')) try {
-            const playerId = message.author.id;
-            const ign = message.content.split('!setign ').join('');
-            await db.setIgn(playerId, ign);
-            message.reply('set!');
+            const playerId = author.id;
+            const ign = content.split('!setign ').join('');
+            await db.setIgn(playerId, ign); //todo create method in db
+            reply('set!');
         } catch (e) {
             console.log(e)
-        }
+        } //todo create switch?
         else if (content.startsWith('!scrim') || content.startsWith('!s')) try {
             await scrim(message);
         } catch (e) {
@@ -53,12 +57,12 @@ client.on('message', async message => {
             console.log(e)
         }
         else if (content.startsWith('!helpme')) try {
-            message.reply(helpMsg)
+            reply(helpMsg)
         } catch (e) {
             console.log(e)
         }
         else if (content.startsWith('!leaderboard')) try {
-            const res = await db.getLeaderboard();
+            const res = await db.getLeaderboard(); // todo create method in db
             const leaderboard = util.formatJson(res)
                 .split('name').join('\n')
                 .split('averageScore').join('')
@@ -66,22 +70,23 @@ client.on('message', async message => {
                 .split('[').join('')
                 .split(']').join('');
 
-            message.reply(leaderboard);
+            reply(leaderboard);
         } catch (e) {
             console.log(e)
         }
     } catch {
-        message.reply('Hiccup...');
+        reply('Hiccup...');
     }
 });
 
 // YOUTUBE - !yt
-client.on('message', async msg => {
-    if (msg.content.startsWith(`${PREFIX}yt`)) {
-        const content = msg.content;
+client.on('message', async message => {
+    const { content, channel } = message;
+    if (content.startsWith(`${PREFIX}yt`)) {
+        const content = content;
         const vidName = content.indexOf('!yt') + 1;
         const result = content.substring(vidName + 1);
-        msg.channel.send(await youTube(result));
+        channel.send(await youTube(result));
     }
 });
 
@@ -90,13 +95,13 @@ const addMatch = async (message) => {
     for (let [sf, attachment] of message.attachments) {
         console.log(attachment);
         response = await util.request('POST', {
-            url: 'https://ft9v591wbd.execute-api.us-east-1.amazonaws.com/dev/ocr',
+            url: 'https://ft9v591wbd.execute-api.us-east-1.amazonaws.com/dev/ocr', // ??????
             body: JSON.stringify(attachment)
         });
 
         const cleanMessage = util.formatJson(response);
-        const oldScores = await db.getEveryonesAverageScore(response);
-        const newScores = await db.recordCombatScores(response);
+        const oldScores = await db.getEveryonesAverageScore(response); // todo create method
+        const newScores = await db.recordCombatScores(response); // todo create method
         const averageEloChange = getScoreAverageChangeMsg(newScores, oldScores);
         const averageEloChangeCleanMsg = util.formatJson(averageEloChange);
         console.log(averageEloChangeCleanMsg);
@@ -108,15 +113,15 @@ const addMatch = async (message) => {
 const getScoreAverageChangeMsg = (oldScores, newScores) => {
     const scoreDifference = {};
     Object.keys(oldScores).forEach(user => {
-        scoreDifference[user] = Math.round(oldScores[user].averageScore - newScores[user].averageScore);
+        scoreDifference[user] = Math.round(oldScores[user].averageScore - newScores[user].averageScore); // ???
     });
     return scoreDifference;
 };
 
 const getElo = async (message) => {
-    const elo = await db.getAverageScore(message.author.id);
+    const elo = await db.getAverageScore(message.author.id); // todo create method
     console.log(elo);
-    message.reply('Average Elo: ' + elo.averageScore);
+    message.reply('Average Elo: ' + elo.averageScore); // todo create method
 };
 
 let shuffleCounter = 0;
@@ -204,7 +209,7 @@ const shuffle = (array) => {
 //send youtube videos
 client.on('message', async msg => {
     const {content, channel} = msg;
-    if (content.startsWith(`${prefix}yt`)) {
+    if (content.startsWith(`${PREFIX}yt`)) {
         const vidName = content.indexOf('!yt') + 1;
         const result = content.substring(vidName + 1);
         channel.send(await getVidLink(result));
@@ -215,7 +220,7 @@ const getVidLink = async (vidName) => {
     try {
         const encodedVidName = encodeURI(vidName);
         console.log(encodedVidName);
-        const params = {url: `https://www.googleapis.com/youtube/v3/search?part=id&maxResults=2&order=viewCount&type=video&key=${ytToken}&q=${encodedVidName}`};
+        const params = {url: `https://www.googleapis.com/youtube/v3/search?part=id&maxResults=2&order=viewCount&type=video&key=${YOU_TUBE_TOKEN}&q=${encodedVidName}`};
         const response = await request('GET', params);
         const videoId = response.items[0].id.videoId;
         return `https://www.youtube.com/watch?v=${videoId}`;
@@ -240,6 +245,4 @@ const request = async (verb, params) => {
             });
     return await res.json();
 };
-
-client.login(token);
 
