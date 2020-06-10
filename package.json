@@ -16,6 +16,7 @@
     "discord.js": "12.2.0",
     "giphy-js-sdk-core": "^1.0.6",
     "googleapis": "49.0.00",
+    "mysql": "latest",
     "node-fetch": "2.6.0",
     "nodemon": "^1.18.11",
     "sqlite-async": "^1.0.12",
