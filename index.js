@@ -9,7 +9,7 @@ const {
     UNICORN_PREFIX,
     PING_PONG_PREFIX,
     COIN_FLIP_PREFIX,
-    YOUT_TUBE_PREFIX,
+    YOU_TUBE_PREFIX,
     VALORANT_SET_IGN_PREFIX,
     VALORANT_SCRIM_PREFIX,
     VALORANT_LEADERBOARD_PREFIX,
@@ -46,6 +46,12 @@ client.on('message', async message => {
         case (content.startsWith(COIN_FLIP_PREFIX)):
             channel.send(Math.round(Math.random()) === 1 ? ' ♕ Heads!' : ' ♘ Tails!');
             break;
+        case (content.startsWith(YOU_TUBE_PREFIX)):
+            console.log('wtf')
+            const videoNameIndex = content.indexOf('!yt') + 1;
+            const videoName = content.substring(videoNameIndex + 1);
+            channel.send(await youTube(videoName));
+            break;
         case (content.startsWith(VALORANT_SET_IGN_PREFIX)):
             const messageArray = content.split('');
             if( messageArray.length <= 7) {
@@ -59,9 +65,6 @@ client.on('message', async message => {
             } else {
                 message.reply('Something went wrong. No actions have been taken.')
             }
-            break;
-        case (content.startsWith(YOUT_TUBE_PREFIX)):
-            channel.send('Coin toss command case works.');
             break;
         case(content.startsWith(VALORANT_SCRIM_PREFIX)):
             channel.send('Scrim command case works.');
@@ -79,54 +82,46 @@ client.on('message', async message => {
 })
 
 // UNICORN - !uni
-// client.on('message', async message => {
-//     const {content, author, reply } = message;
-//     try {
-//         if (content.startsWith('!setign')) try {
-//             const playerId = author.id;
-//             const ign = content.split('!setign ').join('');
-//             await db.setIgn(playerId, ign); //todo create method in db
-//             reply('set!');
-//         } catch (e) {
-//             console.log(e)
-//         }
-//         else if (content.startsWith('!scrim') || content.startsWith('!s')) try {
-//             await scrim(message);
-//         } catch (e) {
-//             console.log(e)
-//         }
-//         else if (content.startsWith('!done') || content === '!d') try {
-//             await addMatch(message);
-//         } catch (e) {
-//             console.log(e)
-//         }
-//         else if (content.startsWith('!elo')) try {
-//             await getElo(message);
-//         } catch (e) {
-//             console.log(e)
-//         }
-//         else if (content.startsWith('!helpme')) try {
-//             reply(helpMsg)
-//         } catch (e) {
-//             console.log(e)
-//         }
-//         else if (content.startsWith('!leaderboard')) try {
-//             const res = await db.getLeaderboard(); // todo create method in db
-//             const leaderboard = util.formatJson(res)
-//                 .split('name').join('\n')
-//                 .split('averageScore').join('')
-//                 .split(':').join('')
-//                 .split('[').join('')
-//                 .split(']').join('');
-//
-//             reply(leaderboard);
-//         } catch (e) {
-//             console.log(e)
-//         }
-//     } catch {
-//         reply('Hiccup...');
-//     }
-// });
+client.on('message', async message => {
+    const {content, author, reply } = message;
+    try {
+        if (content.startsWith('!scrim') || content.startsWith('!s')) try {
+            await scrim(message);
+        } catch (e) {
+            console.log(e)
+        }
+        else if (content.startsWith('!done') || content === '!d') try {
+            await addMatch(message);
+        } catch (e) {
+            console.log(e)
+        }
+        else if (content.startsWith('!elo')) try {
+            await getElo(message);
+        } catch (e) {
+            console.log(e)
+        }
+        else if (content.startsWith('!helpme')) try {
+            reply(helpMsg)
+        } catch (e) {
+            console.log(e)
+        }
+        else if (content.startsWith('!leaderboard')) try {
+            const res = await db.getLeaderboard(); // todo create method in db
+            const leaderboard = util.formatJson(res)
+                .split('name').join('\n')
+                .split('averageScore').join('')
+                .split(':').join('')
+                .split('[').join('')
+                .split(']').join('');
+
+            reply(leaderboard);
+        } catch (e) {
+            console.log(e)
+        }
+    } catch {
+        reply('Hiccup...');
+    }
+});
 //
 // // YOUTUBE - !yt
 // client.on('message', async message => {
