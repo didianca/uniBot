@@ -31,7 +31,6 @@ client.login(DISCORD_TOKEN)
     .catch(err => console.log(err));
 
 client.once('ready', () => {
-    db.connect();
     console.log("Unicorn trotting!")
 });
 

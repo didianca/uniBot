@@ -1,63 +1,33 @@
-const mysql = require('mysql');
-const {
-    DB_HOST,
-    DB_USER,
-    DB_PASSWORD,
-    DB_PORT,
-    DB_NAME
-} = require('./config');
+const Knex = require('knex');
+const knexConfig = require('./knexfile');
 
-const db = mysql.createConnection({
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    port: DB_PORT,
-    database: DB_NAME
-});
+const { Model } = require('objection');
+const { Player } = require('./models/Player');
 
-const insertPlayerIfNotExists = (playerId, name) => {
-    db.query(
-        `INSERT INTO players (id, name) VALUES ('${playerId}', '${name}')`, (err, result, fields) => {
-            if (err) console.log(err)
-            if (result) {
-                return result.length;
-            } else {
-                return false;
-            }
-        }
-    )
+// Initialize knex.
+const knex = Knex(knexConfig);
+
+Model.knex(knex);
+
+const insertPlayerIfNotExists = async (playerId, name) => {
+    await Player.query().insert({
+        id: playerId,
+        name
+    })
 }
 
 
-const getPlayerById = (playerId) => {
-    db.query(
-        `SELECT * FROM players WHERE id = '${playerId}'`, (err, result, fields) => {
-            if (err) console.log(err)
-            if(result){
-                return result.length;
-            } else {
-                return false;
-            }
-        }
-    )
+const getPlayerById = async (playerId) => {
+    await Player.query().where({
+        id: playerId
+    })
 }
 
 
-const updatePlayerInGameName = (playerId, name) => {
-    db.query(
-        `UPDATE players SET name = '${name}' WHERE id = '${playerId}'`, (err, result, fields) => {
-            if (err) console.log(err)
-            if (result) {
-                return result.length;
-            } else {
-                return false;
-            }
-        }
-    )
+const updatePlayerInGameName = async (playerId, name) =>
+    await Player.query().update({ name }).where({id: playerId})
 
-}
 module.exports = {
-    db,
     insertPlayerIfNotExists,
     getPlayerById,
     updatePlayerInGameName,
