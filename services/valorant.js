@@ -1,6 +1,23 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
+const {
+    getPlayerById,
+    updatePlayerInGameName,
+    insertPlayerIfNotExists
+} = require('../db');
 const { db } = require('../db');
+
+const setInGameName = async (playerId, name) => {
+    let result = false;
+    const playerExists = await getPlayerById(playerId);
+    console.log(playerExists);
+    if(playerExists) {
+        result = await updatePlayerInGameName(playerId, name);
+        return result;
+    }
+    result = await insertPlayerIfNotExists(playerId, name);
+    return result;
+}
 
 const scrim = async (message) => {
     if(!message.member.voice.channel.id) return;
@@ -35,5 +52,8 @@ const shuffle = (array) => {
     return array;
 };
 
+module.exports = {
+    setInGameName,
+}
 
         // todo: average the elo of all the players connected to the channel at the moment of scrimming and chose the average as a value for any new player with null 'players.last_elo' value

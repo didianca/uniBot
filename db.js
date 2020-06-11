@@ -3,25 +3,63 @@ const {
     DB_HOST,
     DB_USER,
     DB_PASSWORD,
-    DB_PORT
+    DB_PORT,
+    DB_NAME
 } = require('./config');
 
-module.exports.db = mysql.createConnection({
+const db = mysql.createConnection({
     host: DB_HOST,
     user: DB_USER,
     password: DB_PASSWORD,
     port: DB_PORT,
+    database: DB_NAME
 });
 
-module.exports.insertPlayerIfNotExists = (discordUserId, playerName) => {
+const insertPlayerIfNotExists = (playerId, name) => {
     db.query(
-        `INSERT INTO (id, name) VALUES (${discordUserId}, ${playerName})`, (err) => {
-            let outcome = `${playerName}, you are now part of the squad!`;
-            if(err) {
-                console.log(err);
-                outcome = 'Something went wrong';
+        `INSERT INTO players (id, name) VALUES ('${playerId}', '${name}')`, (err, result, fields) => {
+            if (err) console.log(err)
+            if (result) {
+                return result.length;
+            } else {
+                return false;
             }
-            return outcome;
         }
     )
 }
+
+
+const getPlayerById = (playerId) => {
+    db.query(
+        `SELECT * FROM players WHERE id = '${playerId}'`, (err, result, fields) => {
+            if (err) console.log(err)
+            if(result){
+                return result.length;
+            } else {
+                return false;
+            }
+        }
+    )
+}
+
+
+const updatePlayerInGameName = (playerId, name) => {
+    db.query(
+        `UPDATE players SET name = '${name}' WHERE id = '${playerId}'`, (err, result, fields) => {
+            if (err) console.log(err)
+            if (result) {
+                return result.length;
+            } else {
+                return false;
+            }
+        }
+    )
+
+}
+module.exports = {
+    db,
+    insertPlayerIfNotExists,
+    getPlayerById,
+    updatePlayerInGameName,
+}
+

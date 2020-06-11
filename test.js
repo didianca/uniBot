@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 
-module.exports.scrim = async (message) => {
+module.exports.test = async (message) => {
     const textChannelId = message.channel.id;
     const channelId = message.member.voice.channel.id;
     const allChannels = message.guild.channels;
