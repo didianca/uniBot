@@ -68,7 +68,6 @@ client.on('message', async message => {
             break;
         case(content.startsWith(VALORANT_SCRIM_PREFIX)):
             await scrim(message);
-            channel.send('Scrim command case works.');
             break;
         case(content.startsWith(VALORANT_LEADERBOARD_PREFIX)):
             channel.send('Lead board command case works.');
