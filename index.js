@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const { unicorn } = require('./services/unicorn');
 const { youTube } = require('./services/youtube');
-const { setInGameName } = require('./services/valorant'); // todo wip
+const { setInGameName, scrim, } = require('./services/valorant'); // todo wip
 const { test } = require('./test'); //todo wip
 const util = require('./util');
 const {
@@ -67,6 +67,7 @@ client.on('message', async message => {
             }
             break;
         case(content.startsWith(VALORANT_SCRIM_PREFIX)):
+            await scrim(message);
             channel.send('Scrim command case works.');
             break;
         case(content.startsWith(VALORANT_LEADERBOARD_PREFIX)):
@@ -82,58 +83,47 @@ client.on('message', async message => {
 })
 
 // UNICORN - !uni
-client.on('message', async message => {
-    const {content, author, reply } = message;
-    try {
-        if (content.startsWith('!scrim') || content.startsWith('!s')) try {
-            await scrim(message);
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!done') || content === '!d') try {
-            await addMatch(message);
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!elo')) try {
-            await getElo(message);
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!helpme')) try {
-            reply(helpMsg)
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!leaderboard')) try {
-            const res = await db.getLeaderboard(); // todo create method in db
-            const leaderboard = util.formatJson(res)
-                .split('name').join('\n')
-                .split('averageScore').join('')
-                .split(':').join('')
-                .split('[').join('')
-                .split(']').join('');
-
-            reply(leaderboard);
-        } catch (e) {
-            console.log(e)
-        }
-    } catch {
-        reply('Hiccup...');
-    }
-});
-//
-// // YOUTUBE - !yt
 // client.on('message', async message => {
-//     const { content, channel } = message;
-//     if (content.startsWith(`${PREFIX}yt`)) {
-//         const content = content;
-//         const vidName = content.indexOf('!yt') + 1;
-//         const result = content.substring(vidName + 1);
-//         channel.send(await youTube(result));
+//     const {content, author, reply } = message;
+//     try {
+//         if (content.startsWith('!scrim') || content.startsWith('!s')) try {
+//             await scrim(message);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!done') || content === '!d') try {
+//             await addMatch(message);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!elo')) try {
+//             await getElo(message);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!helpme')) try {
+//             reply(helpMsg)
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!leaderboard')) try {
+//             const res = await db.getLeaderboard(); // todo create method in db
+//             const leaderboard = util.formatJson(res)
+//                 .split('name').join('\n')
+//                 .split('averageScore').join('')
+//                 .split(':').join('')
+//                 .split('[').join('')
+//                 .split(']').join('');
+//
+//             reply(leaderboard);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//     } catch {
+//         reply('Hiccup...');
 //     }
 // });
-//
+
 // const addMatch = async (message) => {
 //     let response;
 //     for (let [sf, attachment] of message.attachments) {
@@ -167,48 +157,7 @@ client.on('message', async message => {
 //     console.log(elo);
 //     message.reply('Average Elo: ' + elo.averageScore); // todo create method
 // };
-//
-// let shuffleCounter = 0;
-// const scrim = async (message, disparityDifferenceThreshold = 0.1) => {
-//     const CHANNEL_CHEESE_CAKE = '310195830290382848';
-//     const channel = await client.channels.fetch(CHANNEL_CHEESE_CAKE);
-//     const usersInChannel = [];
-//     const memberIds = []; // our playerIds
-//     for (let [sf, member] of channel.members) {
-//         const name = member.nickname ? member.nickname : member.user.username;
-//         usersInChannel.push(name);
-//         memberIds.push(member.id);
-//         await db.insertPlayerIfNotExists(member.id, name);
-//     }
-//     if (usersInChannel.length < 2) {
-//         message.channel.send('Players must be in Cheese Cake Channel');
-//         return;
-//     }
-//     const playersData = await db.getPlayers(memberIds);
-//     const shuffledPlayers = shuffle(playersData);
-//     const teams = splitTeams(shuffledPlayers);
-//     const disparityArr = await determineDisparity(teams);
-//     const disparityDifference = disparityArr[0] - disparityArr[1];
-//     let teamMessage = '';
-//     if (Math.abs(disparityDifference) >= disparityDifferenceThreshold) {
-//         if (shuffleCounter % 1 === 0) {
-//             console.log('unable to balance threshold incremented to:', disparityDifferenceThreshold += 0.5);
-//             return scrim(message, disparityDifferenceThreshold += 0.5);
-//         }
-//         return scrim(message, disparityDifferenceThreshold);
-//     }
-//     await db.deleteInProgressMatch(); //there can only be 1 in progress match
-//     await db.addInProgressMatch(teams);
-//     teams.forEach(team => {
-//         teamMessage += `\n> Team ${team[0].name}:\n`;
-//         team.forEach(user => {
-//             teamMessage += `${user.name}\n`;
-//         });
-//     });
-//     teamMessage += `\n first team favored by ${disparityDifference}. Threshold: ${disparityDifferenceThreshold}`;
-//     message.channel.send(teamMessage);
-// };
-//
+
 // const splitTeams = (aggregateUsers) => {
 //     let split = false;
 //     const team0 = [];
@@ -220,7 +169,7 @@ client.on('message', async message => {
 //     }
 //     return [team0, team1];
 // };
-//
+
 // const  determineDisparity = async (teamsArr) => {
 //     // console.log('TEAM 0', teamsArr[0]);
 //     // console.log('TEAM 1', teamsArr[1]);
@@ -231,7 +180,7 @@ client.on('message', async message => {
 //     const team1AvgElo = team1Elo / teamsArr[1].length;
 //     return [team0AvgElo, team1AvgElo];
 // };
-//
+
 // const totalTeamElo = async (teamArr) => {
 //     let totalElo = 0;
 //     const averages = await Promise.all(teamArr.map(player => {
@@ -241,7 +190,7 @@ client.on('message', async message => {
 //     averages.forEach(player => totalElo += player.averageScore);
 //     return totalElo;
 // };
-//
+
 // const shuffle = (array) => {
 //     for (let i = array.length - 1; i > 0; i--) {
 //         const j = Math.floor(Math.random() * (i + 1));
@@ -249,30 +198,7 @@ client.on('message', async message => {
 //     }
 //     return array;
 // };
-//
-// //send youtube videos
-// client.on('message', async msg => {
-//     const {content, channel} = msg;
-//     if (content.startsWith(`${PREFIX}yt`)) {
-//         const vidName = content.indexOf('!yt') + 1;
-//         const result = content.substring(vidName + 1);
-//         channel.send(await getVidLink(result));
-//     }
-// });
-//
-// const getVidLink = async (vidName) => {
-//     try {
-//         const encodedVidName = encodeURI(vidName);
-//         console.log(encodedVidName);
-//         const params = {url: `https://www.googleapis.com/youtube/v3/search?part=id&maxResults=2&order=viewCount&type=video&key=${YOU_TUBE_TOKEN}&q=${encodedVidName}`};
-//         const response = await request('GET', params);
-//         const videoId = response.items[0].id.videoId;
-//         return `https://www.youtube.com/watch?v=${videoId}`;
-//     } catch (e) {
-//         return "This video doesn't exist..."
-//     }
-// };
-//
+
 // const request = async (verb, params) => {
 //     let res;
 //     res = verb.toUpperCase() === 'GET' ?
