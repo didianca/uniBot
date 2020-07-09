@@ -1,10 +1,7 @@
 const Discord = require('discord.js');
-const fetch = require('node-fetch');
-const { unicorn } = require('./services/unicorn');
-const { youTube } = require('./services/youtube');
-const { setInGameName, scrim, } = require('./services/valorant'); // todo wip
-const { test } = require('./test'); //todo wip
-const {formatJson, request} = require('./utils/util');
+const { unicorn } = require('./src/services/unicorn');
+const { youTube } = require('./src/services/youtube');
+const { setInGameName, scrim, addMatch, } = require('./src/services/valorant'); // todo wip
 const {
     UNICORN_PREFIX,
     PING_PONG_PREFIX,
@@ -16,9 +13,8 @@ const {
     VALORANT_ELO_PREFIX,
     VALORANT_DONE_PREFIX,
     DISCORD_TOKEN,
-    YOU_TUBE_TOKEN
 } = require('./config');
-const { db } = require('./db.js');
+const { db } = require('./src/knex/db.js');
 const helpMsg = `Welcome to Unibot:\n
 !flip or !f - random coin flip.\n
 !scrim or !s - start a scrim with all the players in Cheese Cake.\n
@@ -70,7 +66,7 @@ client.on('message', async message => {
             await scrim(message);
             break;
         case(content.startsWith(VALORANT_DONE_PREFIX)):
-            channel.send('Done command case works.')
+            await addMatch(message);
             break;
         case(content.startsWith(VALORANT_LEADERBOARD_PREFIX)):
             channel.send('Lead board command case works.');
@@ -81,41 +77,41 @@ client.on('message', async message => {
     }
 })
 
-client.on('message', async message => {
-    const {content, author, reply } = message;
-    try {
-        if (content.startsWith('!done') || content === '!d') try {
-            await addMatch(message);
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!elo')) try {
-            await getElo(message);
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!helpme')) try {
-            reply(helpMsg)
-        } catch (e) {
-            console.log(e)
-        }
-        else if (content.startsWith('!leaderboard')) try {
-            const res = await db.getLeaderboard(); // todo create method in db
-            const leaderboard = formatJson(res)
-                .split('name').join('\n')
-                .split('averageScore').join('')
-                .split(':').join('')
-                .split('[').join('')
-                .split(']').join('');
-
-            reply(leaderboard);
-        } catch (e) {
-            console.log(e)
-        }
-    } catch {
-        reply('Hiccup...');
-    }
-});
+// client.on('message', async message => {
+//     const {content, author, reply } = message;
+//     try {
+//         if (content.startsWith('!done') || content === '!d') try {
+//             await addMatch(message);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!elo')) try {
+//             await getElo(message);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!helpme')) try {
+//             reply(helpMsg)
+//         } catch (e) {
+//             console.log(e)
+//         }
+//         else if (content.startsWith('!leaderboard')) try {
+//             const res = await db.getLeaderboard(); // todo create method in db
+//             const leaderboard = formatJson(res)
+//                 .split('name').join('\n')
+//                 .split('averageScore').join('')
+//                 .split(':').join('')
+//                 .split('[').join('')
+//                 .split(']').join('');
+//
+//             reply(leaderboard);
+//         } catch (e) {
+//             console.log(e)
+//         }
+//     } catch {
+//         reply('Hiccup...');
+//     }
+// });
 
 // const addMatch = async (message) => {
 //     let response;

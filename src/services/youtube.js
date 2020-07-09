@@ -1,6 +1,6 @@
 const {
     YOU_TUBE_TOKEN
-} = require('../config');
+} = require('../../config');
 
 module.exports.youTube = async (vidName) => {
     try {

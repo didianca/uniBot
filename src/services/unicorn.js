@@ -1,5 +1,5 @@
 const quotes = require('../resources/quotes');
-const { GIPHY_TOKEN } = require('../config');
+const { GIPHY_TOKEN } = require('../../config');
 const GiphyApiClient = require('giphy-js-sdk-core');
 
 giphy = GiphyApiClient(GIPHY_TOKEN);
