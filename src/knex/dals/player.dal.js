@@ -1,22 +1,10 @@
-const Knex = require('knex');
-const knexConfig = require('./knexfile');
-
-const { Model } = require('objection');
-const { Player } = require('./models/Player');
-const { Match } = require('./models/Match');
-
-// Initialize knex.
-const knex = Knex(knexConfig);
-
-Model.knex(knex);
+const { Player } = require('../models/Player');
 
 const insertPlayer = async (playerId, name) =>
     await Player.query().insert({
         id: playerId,
         name
     });
-
-
 
 const getPlayerNameById = async (playerId) =>
     await Player.query().where({
@@ -25,6 +13,13 @@ const getPlayerNameById = async (playerId) =>
 
 const getPlayerById = async (playerId) =>
     await Player.query().findOne({ id: playerId});
+
+const getPlayerByName = async (name) =>
+    await Player.query().findOne({ name: name});
+
+const getPlayerByInGameName = async (inGameName) =>
+    await Player.query().findOne({ in_game_name: inGameName});
+
 
 const getAllPlayers = async  () =>
     await Player.query();
@@ -35,19 +30,17 @@ const updatePlayerName = async (id, name) =>
 const updatePlayerInGameName = async (playerId, inGameName) =>
     await Player.query().update({ in_game_name: inGameName }).where({id: playerId});
 
-const getAverageScoreFromMatches = async (id) =>
-    await Match.query().avg('score').where({id});
-
 const getPlayersInVoiceChannel = async (ids) =>
     await Player.query().whereIn('id',ids)
 
 module.exports = {
     insertPlayer,
+    getPlayerNameById,
     getPlayerById,
-    updatePlayerInGameName,
+    getPlayerByName,
+    getPlayerByInGameName,
     getAllPlayers,
     updatePlayerName,
-    getAverageScoreFromMatches,
-    getPlayersInVoiceChannel,
+    updatePlayerInGameName,
+    getPlayersInVoiceChannel
 }
-

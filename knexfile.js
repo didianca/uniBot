@@ -14,5 +14,11 @@ module.exports = {
     password: DB_PASSWORD,
     port: DB_PORT,
     database: DB_NAME
-  }
+  },
+  migrations: {
+    directory: __dirname + '/src/knex/migrations',
+  },
+  seeds: {
+    directory: __dirname + '/src/knex/seeds',
+  },
 };

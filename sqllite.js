@@ -3,7 +3,7 @@ const uuid = require('uuid');
 let db;
 const init = async () => {
     try {
-        db = await sqlite.open('./data/db.db');
+        db = await sqlite.open('./knex/db.db');
         await db.run(`CREATE TABLE IF NOT EXISTS players (
             id text ,
             name text ,
@@ -44,23 +44,7 @@ const addMatch = async (id, playerId, combatScore, win = 0) => {
     return stmt.finalize();
 };
 
-const recordCombatScores = async (IGNs) => {
-    const matchId = uuid.v4();
-    const newAverages = {};
-    await Promise.all(Object.keys(IGNs).map(async key => {
-        const player = await db.get(`SELECT id FROM players WHERE ign = ?`, key.toString());
-        console.log('Selected', key, player);
-        if (!player) {
-            console.log(key, 'players IGN missing');
-        } else {
-            console.log('PLAYER ', player);
-            await addMatch(matchId, player.id, IGNs[key]);
-            console.log('Added ');
-            newAverages[key] = await getAverageScore(player.id);
-        }
-    }));
-    return newAverages;
-};
+
 
 const getAverageScore = async (playerId) => {
     return db.get(`SELECT avg(combat_score) averageScore FROM matches where player_id = ?;`, playerId);

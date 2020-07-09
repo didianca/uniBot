@@ -1,4 +1,4 @@
-const { getAverageScoreFromMatches } = require('../db')
+const { getAverageScoreFromMatches } = require('../knex/db')
 
 
 const shuffle = (array) => {
@@ -25,8 +25,7 @@ const totalTeamElo = async (teamArr) => {
     let totalElo = 0;
     const averages = await Promise.all(teamArr.map(async (player) => {
         const average = await getAverageScoreFromMatches(player.id);
-        const result = average.score ? average.score : 100;
-        return result; //if the player is new give them a 100 cmbt score
+        return average.score ? average.score : 100; //if the player is new give them a 100 cmbt score
     }));
     averages.forEach(playerAvgElo => totalElo += playerAvgElo);
     return totalElo;
