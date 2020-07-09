@@ -16,9 +16,11 @@
     "discord.js": "12.2.0",
     "giphy-js-sdk-core": "^1.0.6",
     "googleapis": "49.0.00",
+    "knex": "^0.21.1",
     "mysql": "latest",
     "node-fetch": "2.6.0",
     "nodemon": "^1.18.11",
+    "objection": "^2.2.0",
     "sqlite-async": "^1.0.12",
     "sqlite3": "^4.2.0",
     "uuid": "^8.0.0"
