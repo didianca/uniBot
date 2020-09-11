@@ -18,7 +18,7 @@
     "googleapis": "49.0.00",
     "knex": "^0.21.1",
     "mysql": "latest",
-    "node-fetch": "2.6.0",
+    "node-fetch": "2.6.1",
     "nodemon": "^1.18.11",
     "objection": "^2.2.0",
     "sqlite-async": "^1.0.12",
